@@ -7,6 +7,7 @@
 package main
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/MustafaAmer-1/Flux/internal/database"
@@ -32,36 +33,31 @@ func databaseUserToUser(dbuser database.User) User {
 }
 
 type Feed struct {
-	ID        uuid.UUID `json:"id"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-	Name      string    `json:"name"`
-	Url       string    `json:"url"`
-	UserID    uuid.UUID `json:"user_id"`
+	ID            uuid.UUID  `json:"id"`
+	CreatedAt     time.Time  `json:"created_at"`
+	UpdatedAt     time.Time  `json:"updated_at"`
+	Name          string     `json:"name"`
+	Url           string     `json:"url"`
+	UserID        uuid.UUID  `json:"user_id"`
+	LastFetchedAt *time.Time `json:"last_fetched_at"`
 }
 
 func databaseFeedToFeed(feed database.Feed) Feed {
 	return Feed{
-		ID:        feed.ID,
-		CreatedAt: feed.CreatedAt,
-		UpdatedAt: feed.UpdatedAt,
-		Name:      feed.Name,
-		Url:       feed.Url,
-		UserID:    feed.UserID,
+		ID:            feed.ID,
+		CreatedAt:     feed.CreatedAt,
+		UpdatedAt:     feed.UpdatedAt,
+		Name:          feed.Name,
+		Url:           feed.Url,
+		UserID:        feed.UserID,
+		LastFetchedAt: nullTimeToTimePtr(feed.LastFetchedAt),
 	}
 }
 
 func databaseFeedsToFeeds(dbfeeds []database.Feed) []Feed {
-	feeds := []Feed{}
-	for _, feed := range dbfeeds {
-		feeds = append(feeds, Feed{
-			ID:        feed.ID,
-			CreatedAt: feed.CreatedAt,
-			UpdatedAt: feed.UpdatedAt,
-			Name:      feed.Name,
-			Url:       feed.Url,
-			UserID:    feed.UserID,
-		})
+	feeds := make([]Feed, len(dbfeeds))
+	for i, feed := range dbfeeds {
+		feeds[i] = databaseFeedToFeed(feed)
 	}
 	return feeds
 }
@@ -85,15 +81,55 @@ func databaseFeedFollowToFeedFollow(dbFeedFollow database.FeedFollow) FeedFollow
 }
 
 func databaseFeedFollowsToFeedFollows(dbFeedFollows []database.FeedFollow) []FeedFollow {
-	feedFollows := []FeedFollow{}
-	for _, dbFeedFollow := range dbFeedFollows {
-		feedFollows = append(feedFollows, FeedFollow{
-			ID:        dbFeedFollow.ID,
-			CreatedAt: dbFeedFollow.CreatedAt,
-			UpdatedAt: dbFeedFollow.UpdatedAt,
-			UserID:    dbFeedFollow.UserID,
-			FeedID:    dbFeedFollow.FeedID,
-		})
+	feedFollows := make([]FeedFollow, len(dbFeedFollows))
+	for i, dbFeedFollow := range dbFeedFollows {
+		feedFollows[i] = databaseFeedFollowToFeedFollow(dbFeedFollow)
 	}
 	return feedFollows
+}
+
+type Post struct {
+	ID          uuid.UUID  `json:"id"`
+	CreatedAt   time.Time  `json:"created_at"`
+	UpdatedAt   time.Time  `json:"updated_at"`
+	Title       string     `json:"title"`
+	Url         string     `json:"url"`
+	Description *string    `json:"description"`
+	PublishedAt *time.Time `json:"published_at"`
+	FeedID      uuid.UUID  `json:"feed_id"`
+}
+
+func databasePostToPost(dbpost database.Post) Post {
+	return Post{
+		ID:          dbpost.ID,
+		CreatedAt:   dbpost.CreatedAt,
+		UpdatedAt:   dbpost.UpdatedAt,
+		Title:       dbpost.Title,
+		Url:         dbpost.Url,
+		Description: nullStringToStringPtr(dbpost.Description),
+		PublishedAt: nullTimeToTimePtr(dbpost.PublishedAt),
+		FeedID:      dbpost.FeedID,
+	}
+}
+
+func databasePostsToPosts(dbposts []database.Post) []Post {
+	posts := make([]Post, len(dbposts))
+	for i, dbpost := range dbposts {
+		posts[i] = databasePostToPost(dbpost)
+	}
+	return posts
+}
+
+func nullTimeToTimePtr(time sql.NullTime) *time.Time {
+	if time.Valid {
+		return &time.Time
+	}
+	return nil
+}
+
+func nullStringToStringPtr(str sql.NullString) *string {
+	if str.Valid {
+		return &str.String
+	}
+	return nil
 }
