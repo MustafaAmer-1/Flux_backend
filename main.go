@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/MustafaAmer-1/Flux/internal/database"
 	"github.com/go-chi/chi"
@@ -36,9 +37,12 @@ func main() {
 		log.Fatal("Can't connect to database", err_db)
 	}
 
+	dbQ := database.New(dbconn)
 	apiCfg := apiConfig{
-		DB: database.New(dbconn),
+		DB: dbQ,
 	}
+
+	go startScraping(dbQ, 10, time.Minute)
 
 	router := chi.NewRouter()
 	router.Use(cors.Handler(cors.Options{
