@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/MustafaAmer-1/Flux/internal/auth"
 	"github.com/MustafaAmer-1/Flux/internal/database"
 	"github.com/google/uuid"
 )
@@ -30,6 +31,21 @@ func (apiCfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Reques
 	})
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, fmt.Sprintf("Couldn't create a user: %v", err))
+		return
+	}
+
+	respondWithJSON(w, http.StatusCreated, databaseUserToUser(user))
+}
+
+func (apiCfg *apiConfig) handlerGetUser(w http.ResponseWriter, r *http.Request) {
+	apiKey, err := auth.GetApiKey(r.Header)
+	if err != nil {
+		respondWithError(w, http.StatusForbidden, fmt.Sprintf("Auth error: %v", err))
+		return
+	}
+	user, err := apiCfg.DB.GetUserByAPIKey(r.Context(), apiKey)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Auth error: no user with this apikey")
 		return
 	}
 
