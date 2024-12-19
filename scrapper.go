@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/MustafaAmer-1/Flux/internal/database"
+	"github.com/araddon/dateparse"
 	"github.com/google/uuid"
 )
 
@@ -48,8 +49,8 @@ func scrapeFeed(db *database.Queries, feed database.Feed) {
 	created_posts := 0
 	for _, item := range rss_feed.Channel.Items {
 		published_at := sql.NullTime{}
-		if time, err := time.Parse(time.RFC1123Z, item.PubDate); err == nil {
-			published_at.Time = time
+		if time, err := dateparse.ParseAny(item.PubDate); err == nil {
+			published_at.Time = time.UTC()
 			published_at.Valid = true
 		}
 
