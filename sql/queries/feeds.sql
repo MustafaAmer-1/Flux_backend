@@ -6,6 +6,18 @@ RETURNING *;
 -- name: GetFeeds :many
 SELECT * FROM feeds;
 
+-- name: GetFeedsFollowByUser :many
+SELECT feeds.* FROM feeds
+JOIN feed_follow ON feeds.id = feed_follow.feed_id
+WHERE feed_follow.user_id = $1;
+--
+
+-- name: GetFeedsNotFollowByUser :many
+SELECT feeds.* FROM feeds
+JOIN feed_follow ON feeds.id = feed_follow.feed_id
+WHERE feed_follow.user_id != $1;
+--
+
 -- name: GetNextFeedsToFetch :many
 SELECT * FROM feeds
 ORDER BY last_fetched_at ASC NULLS FIRST

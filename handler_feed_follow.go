@@ -39,12 +39,21 @@ func (apiCfg *apiConfig) handlerFollowFeed(w http.ResponseWriter, r *http.Reques
 }
 
 func (apiCfg *apiConfig) handlerGetFollowedFeeds(w http.ResponseWriter, r *http.Request, user database.User) {
-	feedFollows, err := apiCfg.DB.GetFeedFollows(r.Context(), user.ID)
+	feedFollowed, err := apiCfg.DB.GetFeedsFollowByUser(r.Context(), user.ID)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Couldn't get followed feeds")
 		return
 	}
-	respondWithJSON(w, http.StatusOK, databaseFeedFollowsToFeedFollows(feedFollows))
+	respondWithJSON(w, http.StatusOK, databaseFeedsToFeeds(feedFollowed))
+}
+
+func (apiCfg *apiConfig) handlerGetNotFollowedFeeds(w http.ResponseWriter, r *http.Request, user database.User) {
+	feeds, err := apiCfg.DB.GetFeedsNotFollowByUser(r.Context(), user.ID)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't get feeds")
+		return
+	}
+	respondWithJSON(w, http.StatusOK, databaseFeedsToFeeds(feeds))
 }
 
 func (apiCfg *apiConfig) handlerUnFollowFeed(w http.ResponseWriter, r *http.Request, user database.User) {
