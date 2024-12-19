@@ -71,5 +71,5 @@ func (apiCfg *apiConfig) handlerLoginUser(w http.ResponseWriter, r *http.Request
 		respondWithError(w, http.StatusBadRequest, "Couldn't login a user: Invalid Name Or Password!")
 		return
 	}
-	respondWithJSON(w, http.StatusCreated, databaseUserToUser(user))
+	respondWithJSON(w, http.StatusOK, databaseUserToUser(user))
 }

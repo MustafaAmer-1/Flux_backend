@@ -7,15 +7,13 @@ RETURNING *;
 SELECT * FROM feeds;
 
 -- name: GetFeedsFollowByUser :many
-SELECT feeds.* FROM feeds
-JOIN feed_follow ON feeds.id = feed_follow.feed_id
-WHERE feed_follow.user_id = $1;
+SELECT * FROM feeds WHERE id IN
+ (SELECT feed_id FROM feed_follow WHERE feed_follow.user_id = $1);
 --
 
 -- name: GetFeedsNotFollowByUser :many
-SELECT feeds.* FROM feeds
-JOIN feed_follow ON feeds.id = feed_follow.feed_id
-WHERE feed_follow.user_id != $1;
+SELECT * FROM feeds WHERE id NOT IN
+ (SELECT feed_id FROM feed_follow WHERE feed_follow.user_id = $1);
 --
 
 -- name: GetNextFeedsToFetch :many

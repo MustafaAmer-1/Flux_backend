@@ -85,9 +85,8 @@ func (q *Queries) GetFeeds(ctx context.Context) ([]Feed, error) {
 }
 
 const getFeedsFollowByUser = `-- name: GetFeedsFollowByUser :many
-SELECT feeds.id, feeds.created_at, feeds.updated_at, feeds.name, feeds.url, feeds.user_id, feeds.last_fetched_at FROM feeds
-JOIN feed_follow ON feeds.id = feed_follow.feed_id
-WHERE feed_follow.user_id = $1
+SELECT id, created_at, updated_at, name, url, user_id, last_fetched_at FROM feeds WHERE id IN
+ (SELECT feed_id FROM feed_follow WHERE feed_follow.user_id = $1)
 `
 
 func (q *Queries) GetFeedsFollowByUser(ctx context.Context, userID uuid.UUID) ([]Feed, error) {
@@ -123,9 +122,8 @@ func (q *Queries) GetFeedsFollowByUser(ctx context.Context, userID uuid.UUID) ([
 
 const getFeedsNotFollowByUser = `-- name: GetFeedsNotFollowByUser :many
 
-SELECT feeds.id, feeds.created_at, feeds.updated_at, feeds.name, feeds.url, feeds.user_id, feeds.last_fetched_at FROM feeds
-JOIN feed_follow ON feeds.id = feed_follow.feed_id
-WHERE feed_follow.user_id != $1
+SELECT id, created_at, updated_at, name, url, user_id, last_fetched_at FROM feeds WHERE id NOT IN
+ (SELECT feed_id FROM feed_follow WHERE feed_follow.user_id = $1)
 `
 
 func (q *Queries) GetFeedsNotFollowByUser(ctx context.Context, userID uuid.UUID) ([]Feed, error) {
