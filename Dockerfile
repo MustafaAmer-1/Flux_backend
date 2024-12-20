@@ -1,5 +1,5 @@
 # Use the official Go image as a base image for building
-FROM golang:1.20 as builder
+FROM golang:1.21.13 as builder
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -20,7 +20,7 @@ RUN go install github.com/pressly/goose/v3/cmd/goose@latest
 RUN go build -o Flux
 
 # Use a smaller base image for the final container
-FROM debian:bullseye-slim
+FROM debian:latest
 
 # Set working directory
 WORKDIR /app
