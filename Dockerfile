@@ -16,6 +16,9 @@ COPY . .
 # Install goose for database migrations
 RUN go install github.com/pressly/goose/v3/cmd/goose@latest
 
+# Install ca-certificates  for web scrapping
+RUN apt install ca-certificates -y
+
 # Build the application
 RUN go build -o Flux
 
@@ -29,6 +32,9 @@ WORKDIR /app
 COPY --from=builder /app/Flux .
 COPY --from=builder /go/bin/goose /usr/local/bin/goose
 COPY sql /app/sql
+
+# Use ca-certificates installed from the host
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 # Expose the port your app listens on
 EXPOSE 8080
