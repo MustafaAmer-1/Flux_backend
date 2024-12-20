@@ -45,6 +45,7 @@ func main() {
 	go startScraping(dbQ, 10, time.Minute)
 
 	router := chi.NewRouter()
+	router.Use(LoggingMiddleware)
 	router.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"https://*", "http://*"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
