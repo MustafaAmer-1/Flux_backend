@@ -1,0 +1,47 @@
+# flyctl launch added from .gitignore
+# Allowlisting gitignore template for GO projects prevents us
+# from adding various unwanted local files, such as generated
+# files, developer configurations or IDE-specific files etc.
+#
+# Recommended: Go.AllowList.gitignore
+
+# Ignore everything
+**/*
+
+# But not these files...
+!.gitignore
+
+!**/*.go
+!**/go.sum
+!**/go.mod
+
+!**/README.md
+!**/LICENSE
+
+# SQL files
+!**/*.sql*
+!**/sqlc.yaml
+
+# !Makefile
+
+# ...even if they are in subdirectories
+!**/*
+
+!**/Dockerfile
+
+# flyctl launch added from vendor/github.com/go-chi/chi/.gitignore
+vendor/github.com/go-chi/chi/**/.idea
+vendor/github.com/go-chi/chi/**/*.sw?
+vendor/github.com/go-chi/chi/**/.vscode
+
+# flyctl launch added from vendor/github.com/joho/godotenv/.gitignore
+vendor/github.com/joho/godotenv/**/.DS_Store
+
+# flyctl launch added from vendor/github.com/lib/pq/.gitignore
+vendor/github.com/lib/pq/**/.db
+vendor/github.com/lib/pq/**/*.test
+vendor/github.com/lib/pq/**/*~
+vendor/github.com/lib/pq/**/*.swp
+vendor/github.com/lib/pq/**/.idea
+vendor/github.com/lib/pq/**/.vscode
+fly.toml
