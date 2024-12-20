@@ -9,6 +9,7 @@ COPY go.mod go.sum ./
 
 # Download dependencies
 RUN go mod download
+RUN go mod vendor
 
 # Copy the rest of the application code
 COPY . .
